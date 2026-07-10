@@ -4,25 +4,13 @@
       "nombre": "Teclado",
       "precio": 25.9,
       "disponible": true,
-      "id": "XGAhcI-pprM"
+      "id": "uo0HldYUew8"
     },
     {
       "nombre": "Teclado",
       "precio": 25.9,
       "disponible": true,
-      "id": "ofZDG6vS5kM"
-    },
-    {
-      "nombre": "Teclado",
-      "precio": 25.9,
-      "disponible": true,
-      "id": "nvMZrKUdTgM"
-    },
-    {
-      "nombre": "Teclado",
-      "precio": 25.9,
-      "disponible": true,
-      "id": "VcJgxFk6ESA"
+      "id": "ehESJI3e88E"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
