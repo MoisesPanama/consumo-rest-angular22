@@ -1,42 +1,52 @@
 ﻿import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, catchError, throwError } from 'rxjs';
 import { Producto } from './producto.model';
 
-// @Injectable con providedIn: 'root' crea UNA sola instancia para toda la app.
 @Injectable({ providedIn: 'root' })
 export class ProductoService {
-
-  // URL base del recurso. Es relativa para que funcione con el proxy (paso 7).
   private readonly base = '/api/productos';
-
-  // inject() obtiene HttpClient sin necesitar un constructor.
   private readonly http = inject(HttpClient);
 
-  // GET colección: devuelve un Observable con un arreglo de productos.
-  // El <Producto[]> le dice a Angular el tipo esperado de la respuesta JSON.
+  // Manejador centralizado: interpreta el status y re-emite el error.
+  private manejarError(err: HttpErrorResponse) {
+    if (err.status === 0) {
+      console.error('Sin red o bloqueo CORS: no se pudo contactar al servidor.');
+    } else if (err.status === 404) {
+      console.error('Recurso no encontrado (404).');
+    } else if (err.status >= 400 && err.status < 500) {
+      console.error(`Error del cliente (${err.status}).`);
+    } else if (err.status >= 500) {
+      console.error(`Error del servidor (${err.status}).`);
+    }
+    return throwError(() => err);
+  }
+
   listar(): Observable<Producto[]> {
-    return this.http.get<Producto[]>(this.base);
+    return this.http.get<Producto[]>(this.base).pipe(catchError(this.manejarError.bind(this)));
   }
 
-  // GET por id: obtiene un único recurso.
   obtener(id: number): Observable<Producto> {
-    return this.http.get<Producto>(`${this.base}/${id}`);
+    return this.http
+      .get<Producto>(`${this.base}/${id}`)
+      .pipe(catchError(this.manejarError.bind(this)));
   }
 
-  // POST: crea un recurso. El segundo argumento es el cuerpo (body) enviado.
-  // Angular serializa el objeto a JSON automáticamente.
   crear(p: Omit<Producto, 'id'>): Observable<Producto> {
-    return this.http.post<Producto>(this.base, p);
+    return this.http
+      .post<Producto>(this.base, p)
+      .pipe(catchError(this.manejarError.bind(this)));
   }
 
-  // PUT: reemplaza por completo el recurso identificado por id.
   actualizar(id: number, p: Producto): Observable<Producto> {
-    return this.http.put<Producto>(`${this.base}/${id}`, p);
+    return this.http
+      .put<Producto>(`${this.base}/${id}`, p)
+      .pipe(catchError(this.manejarError.bind(this)));
   }
 
-  // DELETE: elimina el recurso. Suele responder 204 No Content (sin cuerpo).
   eliminar(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.base}/${id}`);
+    return this.http
+      .delete<void>(`${this.base}/${id}`)
+      .pipe(catchError(this.manejarError.bind(this)));
   }
 }
