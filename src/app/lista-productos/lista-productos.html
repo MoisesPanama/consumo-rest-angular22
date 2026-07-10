@@ -1,0 +1,11 @@
+﻿@if (productos.isLoading()) {
+  <p>Cargando...</p>
+} @else if (productos.error()) {
+  <p>Error al cargar los productos.</p>
+} @else {
+  <ul>
+    @for (p of productos.value(); track p.id) {
+      <li>{{ p.nombre }} {{ p.precio | currency }}</li>
+    }
+  </ul>
+}
