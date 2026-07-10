@@ -1,4 +1,4 @@
-﻿import { Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { Producto } from '../producto.model';
